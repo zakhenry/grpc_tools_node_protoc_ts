@@ -8,6 +8,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const ExportMap_1 = require("./lib/ExportMap");
 const ProtoIndexFormatter_1 = require("./lib/format/ProtoIndexFormatter");
+const ProtoMsgInterfaceFormatter_1 = require("./lib/format/ProtoMsgInterfaceFormatter");
 const Utility_1 = require("./lib/Utility");
 const plugin_pb_1 = require("google-protobuf/google/protobuf/compiler/plugin_pb");
 const ProtoMsgTsdFormatter_1 = require("./lib/format/ProtoMsgTsdFormatter");
@@ -29,14 +30,14 @@ Utility_1.Utility.withAllStdIn((inputBuff) => {
             // message part
             let msgFileName = Utility_1.Utility.filePathFromProtoWithoutExt(fileName);
             fileList.push(msgFileName);
+            const msgInterfaceFile = new plugin_pb_1.CodeGeneratorResponse.File();
+            msgInterfaceFile.setName(msgFileName + ".interface.d.ts");
+            msgInterfaceFile.setContent(ProtoMsgInterfaceFormatter_1.ProtoMsgInterfaceFormatter.format(fileNameToDescriptor[fileName], exportMap));
+            codeGenResponse.addFile(msgInterfaceFile);
             let msgTsdFile = new plugin_pb_1.CodeGeneratorResponse.File();
             msgTsdFile.setName(msgFileName + ".d.ts");
             msgTsdFile.setContent(ProtoMsgTsdFormatter_1.ProtoMsgTsdFormatter.format(fileNameToDescriptor[fileName], exportMap));
             codeGenResponse.addFile(msgTsdFile);
-            const msgInterfaceFile = new plugin_pb_1.CodeGeneratorResponse.File();
-            msgInterfaceFile.setName(msgFileName + ".interface.d.ts");
-            msgInterfaceFile.setContent(ProtoMsgTsdFormatter_1.ProtoMsgTsdFormatter.format(fileNameToDescriptor[fileName], exportMap));
-            codeGenResponse.addFile(msgInterfaceFile);
             // service part
             let fileDescriptorOutput = ProtoSvcTsdFormatter_1.ProtoSvcTsdFormatter.format(fileNameToDescriptor[fileName], exportMap);
             if (fileDescriptorOutput != '') {

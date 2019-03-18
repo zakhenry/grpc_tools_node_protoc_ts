@@ -31,7 +31,9 @@ var ProtoMsgTsdFormatter;
                 imports.push(`import * as ${pseudoNamespace} from "${upToRoot}${filePath}";`);
             }
         });
+        let symbols = [];
         descriptor.getMessageTypeList().forEach(enumType => {
+            symbols.push(enumType.getName());
             messages.push(MessageFormatter_1.MessageFormatter.format(fileName, exportMap, enumType, 0, descriptor));
         });
         descriptor.getExtensionList().forEach(extension => {
@@ -39,7 +41,9 @@ var ProtoMsgTsdFormatter;
         });
         descriptor.getEnumTypeList().forEach(enumType => {
             enums.push(EnumFormatter_1.EnumFormatter.format(enumType, 0));
+            symbols.push(enumType.getName());
         });
+        imports.push(`import {${symbols.join(', ')}} "${upToRoot}${Utility_1.Utility.filePathFromProtoWithoutExt(fileName)}.interface"`);
         return TplEngine_1.TplEngine.render('msg_tsd', {
             packageName: packageName,
             fileName: fileName,

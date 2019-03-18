@@ -97,7 +97,8 @@ export namespace MessageFormatter {
                            exportMap: ExportMap,
                            descriptor: DescriptorProto,
                            indentLevel: number,
-                           fileDescriptor: FileDescriptorProto): string {
+                           fileDescriptor: FileDescriptorProto,
+                           interfaceOnly: boolean = false): string {
 
         let messageData = JSON.parse(defaultMessageType) as MessageType;
 
@@ -251,7 +252,7 @@ export namespace MessageFormatter {
             return Utility.oneOfName(oneOfDecl.getName());
         });
 
-        return TplEngine.render('partial/message', {
+        return TplEngine.render(interfaceOnly ? 'partial/message_interface' : 'partial/message', {
             indent: Utility.generateIndent(indentLevel),
             objectTypeName: OBJECT_TYPE_NAME,
             BYTES_TYPE: BYTES_TYPE,

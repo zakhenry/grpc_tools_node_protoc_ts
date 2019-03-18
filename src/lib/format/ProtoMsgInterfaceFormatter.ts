@@ -1,12 +1,12 @@
-import {FileDescriptorProto} from "google-protobuf/google/protobuf/descriptor_pb";
-import {ExportMap} from "../ExportMap";
-import {Utility} from "../Utility";
-import {WellKnownTypesMap} from "../WellKnown";
-import {TplEngine} from "../TplEngine";
-import {MessageFormatter} from "./partial/MessageFormatter";
-import {ExtensionFormatter} from "./partial/ExtensionFormatter";
-import {EnumFormatter} from "./partial/EnumFormatter";
-import {DependencyFilter} from "../DependencyFilter";
+import { FileDescriptorProto } from 'google-protobuf/google/protobuf/descriptor_pb';
+import { DependencyFilter } from '../DependencyFilter';
+import { ExportMap } from '../ExportMap';
+import { TplEngine } from '../TplEngine';
+import { Utility } from '../Utility';
+import { WellKnownTypesMap } from '../WellKnown';
+import { EnumFormatter } from './partial/EnumFormatter';
+import { ExtensionFormatter } from './partial/ExtensionFormatter';
+import { MessageFormatter } from './partial/MessageFormatter';
 
 export namespace ProtoMsgInterfaceFormatter {
 
@@ -19,8 +19,23 @@ export namespace ProtoMsgInterfaceFormatter {
         let extensions: Array<string> = [];
         let enums: Array<string> = [];
 
+        let upToRoot = Utility.getPathToRoot(fileName);
+
+        descriptor.getDependencyList().forEach((dependency: string) => {
+            if (DependencyFilter.indexOf(dependency) !== -1) {
+                return; // filtered
+            }
+            let pseudoNamespace = Utility.filePathToPseudoNamespace(dependency);
+            if (dependency in WellKnownTypesMap) {
+                imports.push(`import * as ${pseudoNamespace} from "${WellKnownTypesMap[dependency]}";`);
+            } else {
+                let filePath = Utility.filePathFromProtoWithoutExt(dependency);
+                imports.push(`import * as ${pseudoNamespace} from "${upToRoot}${filePath}.interface";`);
+            }
+        });
+
         descriptor.getMessageTypeList().forEach(enumType => {
-            messages.push(MessageFormatter.format(fileName, exportMap, enumType, 0, descriptor));
+            messages.push(MessageFormatter.format(fileName, exportMap, enumType, 0, descriptor, true));
         });
         descriptor.getExtensionList().forEach(extension => {
             extensions.push(ExtensionFormatter.format(fileName, exportMap, extension, 0));

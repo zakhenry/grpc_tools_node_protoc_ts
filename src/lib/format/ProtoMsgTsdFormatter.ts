@@ -35,7 +35,10 @@ export namespace ProtoMsgTsdFormatter {
             }
         });
 
+        let symbols = [];
+
         descriptor.getMessageTypeList().forEach(enumType => {
+            symbols.push(enumType.getName());
             messages.push(MessageFormatter.format(fileName, exportMap, enumType, 0, descriptor));
         });
         descriptor.getExtensionList().forEach(extension => {
@@ -43,7 +46,10 @@ export namespace ProtoMsgTsdFormatter {
         });
         descriptor.getEnumTypeList().forEach(enumType => {
             enums.push(EnumFormatter.format(enumType, 0));
+            symbols.push(enumType.getName());
         });
+
+        imports.push(`import {${symbols.join(', ')}} "${upToRoot}${Utility.filePathFromProtoWithoutExt(fileName)}.interface"`);
 
         return TplEngine.render('msg_tsd', {
             packageName: packageName,

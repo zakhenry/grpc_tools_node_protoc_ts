@@ -6,6 +6,7 @@
  */
 import {ExportMap} from "./lib/ExportMap";
 import { ProtoIndexFormatter } from './lib/format/ProtoIndexFormatter';
+import { ProtoMsgInterfaceFormatter } from './lib/format/ProtoMsgInterfaceFormatter';
 import {Utility} from "./lib/Utility";
 import {CodeGeneratorRequest, CodeGeneratorResponse} from "google-protobuf/google/protobuf/compiler/plugin_pb";
 import {FileDescriptorProto} from "google-protobuf/google/protobuf/descriptor_pb";
@@ -34,15 +35,17 @@ Utility.withAllStdIn((inputBuff: Buffer) => {
           // message part
           let msgFileName = Utility.filePathFromProtoWithoutExt(fileName);
           fileList.push(msgFileName);
-          let msgTsdFile = new CodeGeneratorResponse.File();
-          msgTsdFile.setName(msgFileName + ".d.ts");
-          msgTsdFile.setContent(ProtoMsgTsdFormatter.format(fileNameToDescriptor[fileName], exportMap));
-          codeGenResponse.addFile(msgTsdFile);
 
           const msgInterfaceFile = new CodeGeneratorResponse.File();
           msgInterfaceFile.setName(msgFileName + ".interface.d.ts");
-          msgInterfaceFile.setContent(ProtoMsgTsdFormatter.format(fileNameToDescriptor[fileName], exportMap));
+          msgInterfaceFile.setContent(ProtoMsgInterfaceFormatter.format(fileNameToDescriptor[fileName], exportMap));
           codeGenResponse.addFile(msgInterfaceFile);
+
+          let msgTsdFile = new CodeGeneratorResponse.File();
+          msgTsdFile.setName(msgFileName + ".d.ts");
+          msgTsdFile.setContent(ProtoMsgTsdFormatter.format(fileNameToDescriptor[fileName], exportMap));
+
+          codeGenResponse.addFile(msgTsdFile);
 
           // service part
           let fileDescriptorOutput = ProtoSvcTsdFormatter.format(fileNameToDescriptor[fileName], exportMap);

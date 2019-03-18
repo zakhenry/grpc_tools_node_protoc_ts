@@ -47,7 +47,7 @@ var MessageFormatter;
         }
         return Utility_1.Utility.isProto2(descriptor);
     }
-    function format(fileName, exportMap, descriptor, indentLevel, fileDescriptor) {
+    function format(fileName, exportMap, descriptor, indentLevel, fileDescriptor, interfaceOnly = false) {
         let messageData = JSON.parse(MessageFormatter.defaultMessageType);
         messageData.messageName = descriptor.getName();
         messageData.oneofDeclList = descriptor.getOneofDeclList();
@@ -183,7 +183,7 @@ var MessageFormatter;
         TplEngine_1.TplEngine.registerHelper('oneOfName', function (oneOfDecl) {
             return Utility_1.Utility.oneOfName(oneOfDecl.getName());
         });
-        return TplEngine_1.TplEngine.render('partial/message', {
+        return TplEngine_1.TplEngine.render(interfaceOnly ? 'partial/message_interface' : 'partial/message', {
             indent: Utility_1.Utility.generateIndent(indentLevel),
             objectTypeName: exports.OBJECT_TYPE_NAME,
             BYTES_TYPE: FieldTypesFormatter_1.BYTES_TYPE,
