@@ -33,6 +33,10 @@ Utility_1.Utility.withAllStdIn((inputBuff) => {
             msgTsdFile.setName(msgFileName + ".d.ts");
             msgTsdFile.setContent(ProtoMsgTsdFormatter_1.ProtoMsgTsdFormatter.format(fileNameToDescriptor[fileName], exportMap));
             codeGenResponse.addFile(msgTsdFile);
+            const msgInterfaceFile = new plugin_pb_1.CodeGeneratorResponse.File();
+            msgInterfaceFile.setName(msgFileName + ".interface.d.ts");
+            msgInterfaceFile.setContent(ProtoMsgTsdFormatter_1.ProtoMsgTsdFormatter.format(fileNameToDescriptor[fileName], exportMap));
+            codeGenResponse.addFile(msgInterfaceFile);
             // service part
             let fileDescriptorOutput = ProtoSvcTsdFormatter_1.ProtoSvcTsdFormatter.format(fileNameToDescriptor[fileName], exportMap);
             if (fileDescriptorOutput != '') {
