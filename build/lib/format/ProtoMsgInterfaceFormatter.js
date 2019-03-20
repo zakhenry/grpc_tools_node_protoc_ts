@@ -39,7 +39,7 @@ var ProtoMsgInterfaceFormatter;
         descriptor.getEnumTypeList().forEach(enumType => {
             enums.push(EnumFormatter_1.EnumFormatter.format(enumType, 0));
         });
-        return TplEngine_1.TplEngine.render('msg_interface', {
+        return TplEngine_1.TplEngine.render('msg_tsd', {
             packageName: packageName,
             fileName: fileName,
             imports: imports,

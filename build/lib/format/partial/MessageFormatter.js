@@ -156,7 +156,7 @@ var MessageFormatter;
             messageData.fields.push(fieldData);
         });
         descriptor.getNestedTypeList().forEach(nested => {
-            const msgOutput = format(fileName, exportMap, nested, indentLevel + 1, fileDescriptor);
+            const msgOutput = format(fileName, exportMap, nested, indentLevel + 1, fileDescriptor, interfaceOnly);
             if (msgOutput !== "") {
                 // If the message class is a Map entry then it isn't output, so don't print the namespace block
                 messageData.nestedTypes.push(msgOutput);
