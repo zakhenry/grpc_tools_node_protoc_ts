@@ -6,6 +6,7 @@
  */
 import {ExportMap} from "./lib/ExportMap";
 import { ProtoIndexFormatter } from './lib/format/ProtoIndexFormatter';
+import { ProtoMsgInterfaceFormatter } from './lib/format/ProtoMsgInterfaceFormatter';
 import {Utility} from "./lib/Utility";
 import {CodeGeneratorRequest, CodeGeneratorResponse} from "google-protobuf/google/protobuf/compiler/plugin_pb";
 import {FileDescriptorProto} from "google-protobuf/google/protobuf/descriptor_pb";
@@ -31,10 +32,18 @@ Utility.withAllStdIn((inputBuff: Buffer) => {
             exportMap.addFileDescriptor(protoFileDescriptor);
         });
 
+        const interfaces = [];
         const files = codeGenRequest.getFileToGenerateList().reduce((fileList, fileName) => {
             // message part
             let msgFileName = Utility.filePathFromProtoWithoutExt(fileName);
             fileList.push(msgFileName);
+
+            const msgInterfaceFile = new CodeGeneratorResponse.File();
+            msgInterfaceFile.setName(msgFileName + ".interface.ts");
+            interfaces.push(msgFileName + ".interface");
+            msgInterfaceFile.setContent(ProtoMsgInterfaceFormatter.format(fileNameToDescriptor[fileName], exportMap));
+            codeGenResponse.addFile(msgInterfaceFile);
+
             let msgTsdFile = new CodeGeneratorResponse.File();
             msgTsdFile.setName(msgFileName + ".d.ts");
             const msgModel = ProtoMsgTsdFormatter.format(fileNameToDescriptor[fileName], exportMap);
@@ -67,6 +76,12 @@ Utility.withAllStdIn((inputBuff: Buffer) => {
       indexTsdFile.setName("index.d.ts");
       indexTsdFile.setContent(indexTsOutput);
       codeGenResponse.addFile(indexTsdFile);
+
+      const interfaceTsOutput = ProtoIndexFormatter.format(interfaces, 'index_tsd');
+      const interfaceTsdFile = new CodeGeneratorResponse.File();
+      interfaceTsdFile.setName("interfaces.ts");
+      interfaceTsdFile.setContent(interfaceTsOutput);
+      codeGenResponse.addFile(interfaceTsdFile);
 
       process.stdout.write(new Buffer(codeGenResponse.serializeBinary()));
 
