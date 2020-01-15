@@ -1,4 +1,4 @@
-
+{{~#is this.emitInterfaceOnly false}}{{!-- emitInterfaceOnly start --}}
 {{!-- message --}}
 {{{indent}}}export class {{{message.messageName}}} extends jspb.Message { {{!-- type class start --}}
 {{#each message.fields}}{{!-- fields start --}}
@@ -55,6 +55,7 @@
 {{{indent}}}    static deserializeBinary(bytes: Uint8Array): {{{message.messageName}}};
 {{{indent}}}    static deserializeBinaryFromReader(message: {{{message.messageName}}}, reader: jspb.BinaryReader): {{{message.messageName}}};
 {{{indent}}}{{curlyRight}}{{!-- type class end --}}
+{{/is~}}
 
 {{!-- namespace --}}
 {{{indent}}}export namespace {{{message.messageName}}} {

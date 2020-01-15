@@ -26,7 +26,6 @@ export class Book extends jspb.Message {
     static deserializeBinary(bytes: Uint8Array): Book;
     static deserializeBinaryFromReader(message: Book, reader: jspb.BinaryReader): Book;
 }
-
 export namespace Book {
     export type AsObject = {
         isbn: number,
@@ -34,6 +33,7 @@ export namespace Book {
         author: string,
     }
 }
+
 
 export class GetBookRequest extends jspb.Message { 
     getIsbn(): number;
@@ -49,12 +49,12 @@ export class GetBookRequest extends jspb.Message {
     static deserializeBinary(bytes: Uint8Array): GetBookRequest;
     static deserializeBinaryFromReader(message: GetBookRequest, reader: jspb.BinaryReader): GetBookRequest;
 }
-
 export namespace GetBookRequest {
     export type AsObject = {
         isbn: number,
     }
 }
+
 
 export class GetBookViaAuthor extends jspb.Message { 
     getAuthor(): string;
@@ -70,12 +70,12 @@ export class GetBookViaAuthor extends jspb.Message {
     static deserializeBinary(bytes: Uint8Array): GetBookViaAuthor;
     static deserializeBinaryFromReader(message: GetBookViaAuthor, reader: jspb.BinaryReader): GetBookViaAuthor;
 }
-
 export namespace GetBookViaAuthor {
     export type AsObject = {
         author: string,
     }
 }
+
 
 export class BookStore extends jspb.Message { 
     getName(): string;
@@ -95,7 +95,6 @@ export class BookStore extends jspb.Message {
     static deserializeBinary(bytes: Uint8Array): BookStore;
     static deserializeBinaryFromReader(message: BookStore, reader: jspb.BinaryReader): BookStore;
 }
-
 export namespace BookStore {
     export type AsObject = {
         name: string,
@@ -103,6 +102,7 @@ export namespace BookStore {
         booksMap: Array<[number, string]>,
     }
 }
+
 
 export class SpecialCases extends jspb.Message { 
     getNormal(): string;
@@ -127,7 +127,6 @@ export class SpecialCases extends jspb.Message {
     static deserializeBinary(bytes: Uint8Array): SpecialCases;
     static deserializeBinaryFromReader(message: SpecialCases, reader: jspb.BinaryReader): SpecialCases;
 }
-
 export namespace SpecialCases {
     export type AsObject = {
         normal: string,
@@ -136,6 +135,7 @@ export namespace SpecialCases {
         pb_var: string,
     }
 }
+
 
 export class OneOfSample extends jspb.Message { 
 
@@ -163,6 +163,12 @@ export class OneOfSample extends jspb.Message {
     setB2(value: boolean): void;
 
 
+    hasNested(): boolean;
+    clearNested(): void;
+    getNested(): OneOfSample.NestedMessage | undefined;
+    setNested(value?: OneOfSample.NestedMessage): void;
+
+
     getSinglewordCase(): OneOfSample.SinglewordCase;
     getTwoWordsCase(): OneOfSample.TwoWordsCase;
 
@@ -175,14 +181,37 @@ export class OneOfSample extends jspb.Message {
     static deserializeBinary(bytes: Uint8Array): OneOfSample;
     static deserializeBinaryFromReader(message: OneOfSample, reader: jspb.BinaryReader): OneOfSample;
 }
-
 export namespace OneOfSample {
     export type AsObject = {
         a1: boolean,
         b1: boolean,
         a2: boolean,
         b2: boolean,
+        nested?: OneOfSample.NestedMessage.AsObject,
     }
+
+
+    export class NestedMessage extends jspb.Message { 
+        getFoo(): string;
+        setFoo(value: string): void;
+
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): NestedMessage.AsObject;
+        static toObject(includeInstance: boolean, msg: NestedMessage): NestedMessage.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: NestedMessage, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): NestedMessage;
+        static deserializeBinaryFromReader(message: NestedMessage, reader: jspb.BinaryReader): NestedMessage;
+    }
+    export namespace NestedMessage {
+        export type AsObject = {
+            foo: string,
+        }
+    }
+
+
 
     export enum SinglewordCase {
         SINGLEWORD_NOT_SET = 0,
@@ -203,6 +232,7 @@ export namespace OneOfSample {
     }
 
 }
+
 
 export enum EnumSample {
     UNKNOWN = 0,
