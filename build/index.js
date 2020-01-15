@@ -8,6 +8,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const ExportMap_1 = require("./lib/ExportMap");
 const ProtoIndexFormatter_1 = require("./lib/format/ProtoIndexFormatter");
+const ProtoMsgInterfaceFormatter_1 = require("./lib/format/ProtoMsgInterfaceFormatter");
 const Utility_1 = require("./lib/Utility");
 const plugin_pb_1 = require("google-protobuf/google/protobuf/compiler/plugin_pb");
 const ProtoMsgTsdFormatter_1 = require("./lib/format/ProtoMsgTsdFormatter");
@@ -26,10 +27,16 @@ Utility_1.Utility.withAllStdIn((inputBuff) => {
             fileNameToDescriptor[protoFileDescriptor.getName()] = protoFileDescriptor;
             exportMap.addFileDescriptor(protoFileDescriptor);
         });
+        const interfaces = [];
         const files = codeGenRequest.getFileToGenerateList().reduce((fileList, fileName) => {
             // message part
             let msgFileName = Utility_1.Utility.filePathFromProtoWithoutExt(fileName);
             fileList.push(msgFileName);
+            const msgInterfaceFile = new plugin_pb_1.CodeGeneratorResponse.File();
+            msgInterfaceFile.setName(msgFileName + ".interface.ts");
+            interfaces.push(msgFileName + ".interface");
+            msgInterfaceFile.setContent(ProtoMsgInterfaceFormatter_1.ProtoMsgInterfaceFormatter.format(fileNameToDescriptor[fileName], exportMap));
+            codeGenResponse.addFile(msgInterfaceFile);
             let msgTsdFile = new plugin_pb_1.CodeGeneratorResponse.File();
             msgTsdFile.setName(msgFileName + ".d.ts");
             const msgModel = ProtoMsgTsdFormatter_1.ProtoMsgTsdFormatter.format(fileNameToDescriptor[fileName], exportMap);
@@ -57,6 +64,11 @@ Utility_1.Utility.withAllStdIn((inputBuff) => {
         indexTsdFile.setName("index.d.ts");
         indexTsdFile.setContent(indexTsOutput);
         codeGenResponse.addFile(indexTsdFile);
+        const interfaceTsOutput = ProtoIndexFormatter_1.ProtoIndexFormatter.format(interfaces, 'index_tsd');
+        const interfaceTsdFile = new plugin_pb_1.CodeGeneratorResponse.File();
+        interfaceTsdFile.setName("interfaces.ts");
+        interfaceTsdFile.setContent(interfaceTsOutput);
+        codeGenResponse.addFile(interfaceTsdFile);
         process.stdout.write(new Buffer(codeGenResponse.serializeBinary()));
     }
     catch (err) {

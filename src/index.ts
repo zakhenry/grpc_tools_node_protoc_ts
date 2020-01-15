@@ -6,12 +6,14 @@
  */
 import {ExportMap} from "./lib/ExportMap";
 import { ProtoIndexFormatter } from './lib/format/ProtoIndexFormatter';
+import { ProtoMsgInterfaceFormatter } from './lib/format/ProtoMsgInterfaceFormatter';
 import {Utility} from "./lib/Utility";
 import {CodeGeneratorRequest, CodeGeneratorResponse} from "google-protobuf/google/protobuf/compiler/plugin_pb";
 import {FileDescriptorProto} from "google-protobuf/google/protobuf/descriptor_pb";
 
 import {ProtoMsgTsdFormatter} from "./lib/format/ProtoMsgTsdFormatter";
 import {ProtoSvcTsdFormatter} from "./lib/format/ProtoSvcTsdFormatter";
+import { TplEngine } from "./lib/TplEngine";
 
 Utility.withAllStdIn((inputBuff: Buffer) => {
 
@@ -30,29 +32,38 @@ Utility.withAllStdIn((inputBuff: Buffer) => {
             exportMap.addFileDescriptor(protoFileDescriptor);
         });
 
+        const interfaces = [];
         const files = codeGenRequest.getFileToGenerateList().reduce((fileList, fileName) => {
-          // message part
-          let msgFileName = Utility.filePathFromProtoWithoutExt(fileName);
-          fileList.push(msgFileName);
-          let msgTsdFile = new CodeGeneratorResponse.File();
-          msgTsdFile.setName(msgFileName + ".d.ts");
-          msgTsdFile.setContent(ProtoMsgTsdFormatter.format(fileNameToDescriptor[fileName], exportMap));
-          codeGenResponse.addFile(msgTsdFile);
+            // message part
+            let msgFileName = Utility.filePathFromProtoWithoutExt(fileName);
+            fileList.push(msgFileName);
 
-          // service part
-          let fileDescriptorOutput = ProtoSvcTsdFormatter.format(fileNameToDescriptor[fileName], exportMap);
-          if (fileDescriptorOutput != '') {
-              let svcFileName = Utility.svcFilePathFromProtoWithoutExt(fileName);
-              let svtTsdFile = new CodeGeneratorResponse.File();
-              svtTsdFile.setName(svcFileName + ".d.ts");
-              svtTsdFile.setContent(fileDescriptorOutput);
-              codeGenResponse.addFile(svtTsdFile);
+            const msgInterfaceFile = new CodeGeneratorResponse.File();
+            msgInterfaceFile.setName(msgFileName + ".interface.ts");
+            interfaces.push(msgFileName + ".interface");
+            msgInterfaceFile.setContent(ProtoMsgInterfaceFormatter.format(fileNameToDescriptor[fileName], exportMap));
+            codeGenResponse.addFile(msgInterfaceFile);
+
+            let msgTsdFile = new CodeGeneratorResponse.File();
+            msgTsdFile.setName(msgFileName + ".d.ts");
+            const msgModel = ProtoMsgTsdFormatter.format(fileNameToDescriptor[fileName], exportMap);
+            msgTsdFile.setContent(TplEngine.render('msg_tsd', msgModel));
+            codeGenResponse.addFile(msgTsdFile);
+
+            // service part
+            let fileDescriptorModel = ProtoSvcTsdFormatter.format(fileNameToDescriptor[fileName], exportMap);
+            if (fileDescriptorModel != null) {
+                let svcFileName = Utility.svcFilePathFromProtoWithoutExt(fileName);
+                let svtTsdFile = new CodeGeneratorResponse.File();
+                svtTsdFile.setName(svcFileName + ".d.ts");
+                svtTsdFile.setContent(TplEngine.render('svc_tsd', fileDescriptorModel));
+                codeGenResponse.addFile(svtTsdFile);
               fileList.push(svcFileName);
-          }
+            }
 
           return fileList;
 
-      }, []);
+        }, []);
 
       const indexJsOutput = ProtoIndexFormatter.format(files, 'index_js');
       const indexJsFile = new CodeGeneratorResponse.File();
@@ -65,6 +76,12 @@ Utility.withAllStdIn((inputBuff: Buffer) => {
       indexTsdFile.setName("index.d.ts");
       indexTsdFile.setContent(indexTsOutput);
       codeGenResponse.addFile(indexTsdFile);
+
+      const interfaceTsOutput = ProtoIndexFormatter.format(interfaces, 'index_tsd');
+      const interfaceTsdFile = new CodeGeneratorResponse.File();
+      interfaceTsdFile.setName("interfaces.ts");
+      interfaceTsdFile.setContent(interfaceTsOutput);
+      codeGenResponse.addFile(interfaceTsdFile);
 
       process.stdout.write(new Buffer(codeGenResponse.serializeBinary()));
 
