@@ -58,4 +58,12 @@ message OneOfSample {
         bool a_2 = 3;
         bool b_2 = 4;
     }
+
+
+    NestedMessage nested = 5;
+
+    message NestedMessage {
+        string foo = 1;
+    }
+
 }

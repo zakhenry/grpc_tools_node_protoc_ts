@@ -35,7 +35,7 @@ export namespace ProtoMsgInterfaceFormatter {
         });
 
         descriptor.getMessageTypeList().forEach(enumType => {
-            messages.push(MessageFormatter.format(fileName, exportMap, enumType, "", descriptor));
+            messages.push(MessageFormatter.format(fileName, exportMap, enumType, "", descriptor, true));
         });
         descriptor.getExtensionList().forEach(extension => {
             extensions.push(ExtensionFormatter.format(fileName, exportMap, extension, ""));

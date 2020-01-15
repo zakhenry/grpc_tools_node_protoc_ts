@@ -31,7 +31,7 @@ var ProtoMsgInterfaceFormatter;
             }
         });
         descriptor.getMessageTypeList().forEach(enumType => {
-            messages.push(MessageFormatter_1.MessageFormatter.format(fileName, exportMap, enumType, "", descriptor));
+            messages.push(MessageFormatter_1.MessageFormatter.format(fileName, exportMap, enumType, "", descriptor, true));
         });
         descriptor.getExtensionList().forEach(extension => {
             extensions.push(ExtensionFormatter_1.ExtensionFormatter.format(fileName, exportMap, extension, ""));
