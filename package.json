@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "build": "tsc -p . && cp -r src/lib/template build/lib",
-    "generate:example": "yarn build && grpc_tools_node_protoc --plugin=protoc-gen-ts=./bin/protoc-gen-ts --ts_out=./examples/build/proto --proto_path=./examples/proto/ ./examples/proto/*.proto",
+    "generate:example": "yarn build && ./examples/bash/build.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
