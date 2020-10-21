@@ -1,6 +1,6 @@
 {
   "name": "@zakhenry/grpc_tools_node_protoc_ts",
-  "version": "2.6.5",
+  "version": "2.7.2",
   "description": "Generate d.ts definitions for generated js files from grpc_tools_node_protoc",
   "main": "build/index.js",
   "scripts": {
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/agreatfool/grpc_tools_node_protoc_ts#readme",
   "dependencies": {
-    "google-protobuf": "3.5.0",
+    "google-protobuf": "^3.13.0",
     "handlebars": "4.5.3",
     "handlebars-helpers": "0.10.0"
   },
